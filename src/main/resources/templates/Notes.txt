@@ -1,0 +1,6 @@
+TO RUN SPRING BOOT PROJECT FROM TERMINAL :-
+ .\mvnw.cmd spring-boot:run -> use this command in the working directry.
+ .\mvnw.cmd spring-boot:run
+
+
+ com.damon.ai.expense.trackerr.aiexpensetracker.
