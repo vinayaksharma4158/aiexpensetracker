@@ -82,7 +82,7 @@ public class GlobalExceptionHandler {
         error.put("status", status.value());
         error.put("error", status.getReasonPhrase());
         error.put("message", message);
-        error.put("Exception", "EmailAlreadyExistsException");
+        
 
         return new ResponseEntity<>(error, status);
     }
