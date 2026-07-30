@@ -51,6 +51,7 @@ public class AuditFilter implements Filter {
                 "API_ACCESS",
                 req.getRequestURI(),
                 req.getMethod(),
+                req.getRemoteAddr(),
                 res.getStatus());
     }
 }

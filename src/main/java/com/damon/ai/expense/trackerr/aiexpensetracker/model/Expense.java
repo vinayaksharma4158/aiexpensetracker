@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "expenses")
 public class Expense {
 
     @Id
@@ -18,21 +19,23 @@ public class Expense {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // LINK TO USER
+    // Logged-in user's email
     private String userEmail;
 
+    // Constructors
     public Expense() {
     }
 
-    public Expense(Long id, Double amount, String category, String description, String userEmail) {
+    public Expense(Long id, Double amount, String category,
+            String description, String userEmail) {
         this.id = id;
         this.amount = amount;
-            ry = category;
+        this.category = category;
         this.description = description;
         this.userEmail = userEmail;
     }
 
-    // getters & setters
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -81,5 +84,5 @@ public class Expense {
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
     }
-
 }
+

@@ -21,6 +21,7 @@ public class AuditService {
             String action,
             String endpoint,
             String method,
+            String ipAdress,
             Integer statusCode) {
 
         AuditLog log = new AuditLog();
@@ -30,6 +31,7 @@ public class AuditService {
         log.setEndpoint(endpoint);
         log.setMethod(method);
         log.setStatusCode(statusCode);
+        log.setIpAddress(ipAdress);
         log.setTimestamp(LocalDateTime.now());
 
         repository.save(log);

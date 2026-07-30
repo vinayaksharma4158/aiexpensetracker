@@ -20,6 +20,8 @@ public class AuditLog {
 
     private Integer statusCode;
 
+    private String ipAddress;
+
     private LocalDateTime timestamp;
 
     // Getters and Setters
@@ -74,6 +76,14 @@ public class AuditLog {
 
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+       public String getIpAddress() {
+        return ipAddress;
     }
 
     public void setTimestamp(LocalDateTime timestamp) {
