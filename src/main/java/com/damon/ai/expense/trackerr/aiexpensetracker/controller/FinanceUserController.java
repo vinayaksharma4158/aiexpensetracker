@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.damon.ai.expense.trackerr.aiexpensetracker.service.IpAdressService;
 
+import org.springframework.security.core.Authentication;
+
+
 import com.damon.ai.expense.trackerr.aiexpensetracker.model.FinanceUser;
 import com.damon.ai.expense.trackerr.aiexpensetracker.service.FinanceUserService;
 
@@ -48,4 +51,24 @@ public class FinanceUserController {
     public List<FinanceUser> getAllUsers() {
         return service.getAllUsers();
     }
+
+
+   
+   @GetMapping("/me")
+public FinanceUser getCurrentUser(Authentication authentication) {
+    // authentication.getName() will give you the username/email from JWT
+    String email = authentication.getName();
+    return service.findByEmail(email); // implement this in your service
+}
+
+
+@PutMapping("/updateUserId")
+public FinanceUser updateUserId(Authentication authentication, @RequestParam String newUserId) {
+    String email = authentication.getName(); // email from JWT
+    return service.updateUserIdByEmail(email, newUserId);
+}
+
+
+
+
 }

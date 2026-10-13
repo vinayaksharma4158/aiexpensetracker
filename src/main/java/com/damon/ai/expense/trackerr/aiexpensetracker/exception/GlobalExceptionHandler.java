@@ -29,6 +29,12 @@ public class GlobalExceptionHandler {
                 "Invalid email or password");
     }
 
+    
+    @ExceptionHandler(UserIdAlreadyExistsException.class)
+    public ResponseEntity<String> handleUserIdAlreadyExists(UserIdAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
     // Forbidden access
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDenied(AccessDeniedException ex) {
@@ -82,7 +88,7 @@ public class GlobalExceptionHandler {
         error.put("status", status.value());
         error.put("error", status.getReasonPhrase());
         error.put("message", message);
-        error.put("Exception", "EmailAlreadyExistsException");
+        
 
         return new ResponseEntity<>(error, status);
     }
