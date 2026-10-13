@@ -15,4 +15,6 @@ public interface FinanceUserRepository extends JpaRepository<FinanceUser, Long> 
     boolean existsByEmail(String email);
 
     boolean existsByUserId(String userId);
+
+    Optional<FinanceUser> findByUserId(String userId); 
 }

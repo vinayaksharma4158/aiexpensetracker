@@ -1,0 +1,56 @@
+
+POST http://localhost:8080/aiexpense/api/financeusers/register
+Content-Type: application/json
+
+{
+  "firstName": "ASD",
+  "lastName": "ASD",
+  "email": "ASD2@gmail.com",
+  "mobileNumber": "12345678892",
+  "password": "Asdfghjkl@123",
+  "role": "USER"
+}
+
+
+for ($i=1; $i -le 500; $i++) {
+    $body = @{
+        firstName = "GG1"
+        lastName = "GG1"
+        email = "Vinayak.sharma.2$i@gmail.com"
+        mobileNumber = "789652323124$i"
+        password = "Vinayak@2001Sharma"
+        role = "USER"
+    } | ConvertTo-Json
+
+    Start-Job -ScriptBlock {
+        param($payload)
+        Invoke-RestMethod -Uri "http://localhost:8080/aiexpense/api/financeusers/register" `
+                          -Method Post `
+                          -ContentType "application/json" `
+                          -Body $payload
+    } -ArgumentList $body
+}
+
+# Wait for all jobs to finish and collect results
+Get-Job | Wait-Job
+Get-Job | Receive-Job
+
+$lines = @("email,mobile")
+for ($i=1; $i -le 10000; $i++) {
+    $email = "Vinayak.sharma.8878.4sample.$i@gmail.com"
+    $mobile = "99999888585653" + (3000 + $i)
+    $lines += "$email,$mobile"
+}
+$lines | Out-File -FilePath "C:\apache-jmeter-5.6.3\bin\users10000new.csv" -Encoding ascii
+
+
+
+$lines = @("username,password")
+for ($i=1; $i -le 10000; $i++) {
+    $username = "Vinayak.sharma.8878.4sample.$i@gmail.com"
+    $password = "Password!2001@1231"   # same password for all
+    $lines += "$username,$password"
+}
+$lines | Out-File -FilePath "C:\apache-jmeter-5.6.3\bin\logins10000.csv" -Encoding ascii
+
+

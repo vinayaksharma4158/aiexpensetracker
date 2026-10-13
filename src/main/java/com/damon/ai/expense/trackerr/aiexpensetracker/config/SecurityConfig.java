@@ -36,44 +36,38 @@ public class SecurityConfig {
                 this.accessDeniedHandler = accessDeniedHandler;
         }
 
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http)
-                        throws Exception {
+       @Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.csrf(csrf -> csrf.disable())
+        .cors(cors -> {}) // ✅ enable CORS support
 
-                http.csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                "/api/auth/**",
+                "/api/financeusers/register",
+                "/h2-console/**",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/actuator/**",
+                "/swagger-ui.html")
+            .permitAll()
+            .anyRequest()
+            .authenticated())
 
-                                .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers(
-                                                                "/api/auth/**",
-                                                                "/api/financeusers/register",
-                                                                "/h2-console/**",
-                                                                "/swagger-ui/**",
-                                                                "/v3/api-docs/**",
-                                                                "/swagger-ui.html")
-                                                .permitAll()
-                                                .anyRequest()
-                                                .authenticated())
+        .exceptionHandling(exception -> exception
+            .authenticationEntryPoint(authenticationEntryPoint)
+            .accessDeniedHandler(accessDeniedHandler))
 
-                                .exceptionHandling(exception -> exception
-                                                .authenticationEntryPoint(authenticationEntryPoint)
-                                                .accessDeniedHandler(accessDeniedHandler))
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                                .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
-                                .headers(headers -> headers
-                                                .frameOptions(frame -> frame.disable()));
+    http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+    http.addFilterAfter(auditFilter, JwtAuthFilter.class);
 
-                http.addFilterBefore(
-                                jwtAuthFilter,
-                                UsernamePasswordAuthenticationFilter.class);
-
-                http.addFilterAfter(
-                                auditFilter,
-                                JwtAuthFilter.class);
-
-                return http.build();
-        }
+    return http.build();
+}
 
         @Bean
         public AuthenticationManager authenticationManager(
