@@ -6,6 +6,9 @@ import java.security.Key;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -15,6 +18,8 @@ import io.jsonwebtoken.security.Keys;
 public class JwtUtil {
     private static final String SECRET_KEY = "q83Jf9kzYwZlQ3h4uQ2p9vYwzF1kzYwZlQ3h4uQ2p9vYwzF1kzYw=="; // example
 
+    private static final long JWT_EXPIRATION_MS = 5 * 60 * 1000L;
+    
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
     }
@@ -23,7 +28,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_MS)) // 1 hour
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -38,12 +43,34 @@ public class JwtUtil {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    	 try {
+    	        String username = extractUsername(token);
+
+    	        return username.equals(userDetails.getUsername())
+    	                && !isTokenExpired(token);
+
+    	 } catch (io.jsonwebtoken.ExpiredJwtException e) {
+    	        return false;
+    	    } catch (io.jsonwebtoken.JwtException
+    	             | IllegalArgumentException e) {
+    	        return false;
+    	    }
     }
 
     private boolean isTokenExpired(String token) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isTokenExpired'");
+        Date expiration = extractExpiration(token);
+        return expiration.before(new Date());
+    }
+
+    private Date extractExpiration(String token) {
+        return extractAllClaims(token).getExpiration();
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
